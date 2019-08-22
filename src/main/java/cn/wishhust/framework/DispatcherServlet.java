@@ -26,25 +26,32 @@ import java.util.Map;
 public class DispatcherServlet extends HttpServlet {
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
+        // 初始化相关Helper类
         HelperLoader.init();
+        // 获取ServletContext对象（用于注册Servlet）
         ServletContext servletContext = servletConfig.getServletContext();
+        // 注册处理Jsp的servlet
         ServletRegistration jspServlet = servletContext.getServletRegistration("jsp");
         jspServlet.addMapping(ConfigHelper.getAppJspPath() + "*");
+        // 注册处理静态资源的默认Servlet
         ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
         defaultServlet.addMapping(ConfigHelper.getAppAssetPath() + "*");
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // 获取请求方法和请求路径
         String requestMethod = req.getMethod().toLowerCase();
         String requestPath = req.getPathInfo();
 
+        //获取Action处理器
         Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
 
         if (handler != null) {
+            // 获取Controller类及其Bean实例
             Class<?> controllerClass = handler.getControllerClass();
             Object controllerBean = BeanHelper.getBean(controllerClass);
-
+            // 创建请求参数对象
             HashMap<String, Object> paramMap = new HashMap<String, Object>();
             Enumeration<String> paramNames = req.getParameterNames();
             while (paramNames.hasMoreElements()) {
@@ -67,9 +74,12 @@ public class DispatcherServlet extends HttpServlet {
                 }
             }
             Param param = new Param(paramMap);
+            // 调用Action方法
             Method actionMethod = handler.getActionMethod();
             Object result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
+            //处理Action方法返回值
             if (result instanceof View) {
+                // 返回 JSP 页面
                 View view = (View) result;
                 String path = view.getPath();
                 if (StringUtil.isNotEmpty(path)) {
@@ -84,6 +94,7 @@ public class DispatcherServlet extends HttpServlet {
                     }
                 }
             } else if (result instanceof Data) {
+                // 返回 JSON 数据
                 Data data = (Data) result;
                 Object model = data.getModel();
                 if (model != null) {
