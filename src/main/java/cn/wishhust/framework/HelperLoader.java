@@ -1,9 +1,6 @@
 package cn.wishhust.framework;
 
-import cn.wishhust.framework.helper.BeanHelper;
-import cn.wishhust.framework.helper.ClassHelper;
-import cn.wishhust.framework.helper.ControllerHelper;
-import cn.wishhust.framework.helper.IocHelper;
+import cn.wishhust.framework.helper.*;
 import cn.wishhust.framework.util.ClassUtil;
 
 public final class HelperLoader {
@@ -12,6 +9,7 @@ public final class HelperLoader {
         Class<?>[] classList = {
                 ClassHelper.class,
                 BeanHelper.class,
+                AopHelper.class,
                 IocHelper.class,
                 ControllerHelper.class
         };

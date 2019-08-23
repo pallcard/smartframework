@@ -3,6 +3,7 @@ package cn.wishhust.framework.helper;
 import cn.wishhust.framework.annotation.Controller;
 import cn.wishhust.framework.annotation.Service;
 import cn.wishhust.framework.util.ClassUtil;
+import java.lang.annotation.Annotation;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -57,7 +58,7 @@ public final class ClassHelper {
      * @param superClass
      * @return
      */
-    public static Set<Class<?>> getClassSetBySuper(Class<T> superClass) {
+    public static Set<Class<?>> getClassSetBySuper(Class<?> superClass) {
         Set<Class<?>> classSet = new HashSet<Class<?>>();
         for (Class<?> cls : CLASS_SET) {
             if (superClass.isAssignableFrom(cls) && !superClass.equals(cls)) {
@@ -67,6 +68,11 @@ public final class ClassHelper {
         return classSet;
     }
 
+    /**
+     * 获取应用包名下带有某注解的所有类
+     * @param annotationClass
+     * @return
+     */
     public static Set<Class<?>> getClassSetByAnnotation(Class<? extends Annotation> annotationClass) {
         Set<Class<?>> classSet = new HashSet<Class<?>>();
         for (Class<?> cls : CLASS_SET) {
