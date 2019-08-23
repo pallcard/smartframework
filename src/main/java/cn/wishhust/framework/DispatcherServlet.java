@@ -44,21 +44,24 @@ public class DispatcherServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // 获取请求方法和请求路径
-        String requestMethod = req.getMethod().toLowerCase();
-        String requestPath = req.getPathInfo();
 
-        if (requestPath.equals("/favicon.ico")) {
-            return;
-        }
+        ServletHelper.init(req, resp);
+        try {
+            // 获取请求方法和请求路径
+            String requestMethod = req.getMethod().toLowerCase();
+            String requestPath = req.getPathInfo();
 
-        //获取Action处理器
-        Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
+            if (requestPath.equals("/favicon.ico")) {
+                return;
+            }
 
-        if (handler != null) {
-            // 获取Controller类及其Bean实例
-            Class<?> controllerClass = handler.getControllerClass();
-            Object controllerBean = BeanHelper.getBean(controllerClass);
+            //获取Action处理器
+            Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
+
+            if (handler != null) {
+                // 获取Controller类及其Bean实例
+                Class<?> controllerClass = handler.getControllerClass();
+                Object controllerBean = BeanHelper.getBean(controllerClass);
 //            // 创建请求参数对象
 //            HashMap<String, Object> paramMap = new HashMap<String, Object>();
 //            Enumeration<String> paramNames = req.getParameterNames();
@@ -82,27 +85,27 @@ public class DispatcherServlet extends HttpServlet {
 //                }
 //            }
 //            Param param = new Param(paramMap);
-            Param param;
-            if (UploadHelper.isMultipart(req)){
-                param = UploadHelper.createParam(req);
-            } else {
-                param = RequestHelper.createParam(req);
-            }
+                Param param;
+                if (UploadHelper.isMultipart(req)) {
+                    param = UploadHelper.createParam(req);
+                } else {
+                    param = RequestHelper.createParam(req);
+                }
 
-            // 调用Action方法
-            Method actionMethod = handler.getActionMethod();
-            Object result;
+                // 调用Action方法
+                Method actionMethod = handler.getActionMethod();
+                Object result;
 
-            if (param.isEmpty()) {
-                result = ReflectionUtil.invokeMethod(controllerBean, actionMethod);
-            } else {
-                result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
-            }
+                if (param.isEmpty()) {
+                    result = ReflectionUtil.invokeMethod(controllerBean, actionMethod);
+                } else {
+                    result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
+                }
 
 
-            //处理Action方法返回值
-            if (result instanceof View) {
-                // 返回 JSP 页面
+                //处理Action方法返回值
+                if (result instanceof View) {
+                    // 返回 JSP 页面
 //                View view = (View) result;
 //                String path = view.getPath();
 //                if (StringUtil.isNotEmpty(path)) {
@@ -116,9 +119,9 @@ public class DispatcherServlet extends HttpServlet {
 //                        req.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(req, resp);
 //                    }
 //                }
-                handleViewResult((View) result, req, resp);
-            } else if (result instanceof Data) {
-                // 返回 JSON 数据
+                    handleViewResult((View) result, req, resp);
+                } else if (result instanceof Data) {
+                    // 返回 JSON 数据
 //                Data data = (Data) result;
 //                Object model = data.getModel();
 //                if (model != null) {
@@ -130,10 +133,13 @@ public class DispatcherServlet extends HttpServlet {
 //                    writer.flush();
 //                    writer.close();
 //                }
-                handleDataResult((Data) result, resp);
+                    handleDataResult((Data) result, resp);
+                }
             }
-
+        } finally {
+            ServletHelper.destroy();
         }
+
     }
 
     private void handleViewResult(View view, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
