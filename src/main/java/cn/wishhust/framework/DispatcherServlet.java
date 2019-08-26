@@ -25,6 +25,13 @@ import java.util.Map;
 
 /**
  * 请求转发器
+ *
+ * 从Servlet3.0开始，配置Servlet支持注解方式
+ *
+ * @WebServlet
+ * 属性
+ * urlPatterns/value  指定Servlet处理的url
+ * loadOnStartup      标记容器是否在应用启动时就加载这个Servlet，默认不配置或数值为负数时表示客户端第一次请求Servlet时再加载；0或正数表示启动应用就加载，正数情况下，数值越小，加载该Servlet的优先级越高；
  */
 @WebServlet(urlPatterns = "/*", loadOnStartup = 0)
 public class DispatcherServlet extends HttpServlet {

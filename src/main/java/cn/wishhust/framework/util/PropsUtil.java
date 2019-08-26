@@ -19,6 +19,7 @@ public final class PropsUtil {
         InputStream is = null;
 
         try {
+            // 相对于当前项目的classpath的相对路径来查找资源
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
             if (is == null) {
                 throw new FileNotFoundException(fileName + "file is not found");

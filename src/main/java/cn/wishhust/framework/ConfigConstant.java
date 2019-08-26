@@ -1,5 +1,9 @@
 package cn.wishhust.framework;
 
+
+/**
+ * 相关配置常量
+ */
 public interface ConfigConstant {
     String CONFIG_FILE = "smart.properties";
 

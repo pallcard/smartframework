@@ -10,6 +10,12 @@ import java.util.Map;
 
 /**
  * 依赖注入助手类
+ *
+ * 作用：为类注入需要依赖的成员
+ *
+ * 原理：先通过BeanHelper获取所有BeanMap ，遍历所有映射关系（BeanMap），通过反射获取所有成员遍历，判断变量上是否带有Inject注解，
+ * 若有，这个从BeanMap中取出Bean实例，并通过反射修改该成员的值。
+ *
  */
 public final class IocHelper {
     static {

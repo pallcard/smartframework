@@ -14,6 +14,11 @@ import java.lang.reflect.Method;
 public final class ReflectionUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtil.class);
 
+    /**
+     * 创建实例
+     * @param cls
+     * @return
+     */
     public static Object newInstance(Class<?> cls) {
         Object instance;
         try {
@@ -25,6 +30,13 @@ public final class ReflectionUtil {
         return instance;
     }
 
+    /**
+     * 调用方法
+     * @param obj
+     * @param method
+     * @param args
+     * @return
+     */
     public static Object invokeMethod(Object obj, Method method, Object... args) {
         Object result;
         try {
@@ -37,6 +49,12 @@ public final class ReflectionUtil {
         return result;
     }
 
+    /**
+     * 设置成员变量的值
+     * @param obj
+     * @param field
+     * @param value
+     */
     public static void setField(Object obj, Field field, Object value) {
         try {
             field.setAccessible(true);

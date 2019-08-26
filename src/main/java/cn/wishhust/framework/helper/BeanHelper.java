@@ -7,7 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 public final class BeanHelper {
-    private static final Map<Class<?>, Object> BEAN_MAP = new HashMap<Class<?>, Object>();
+
+    /**
+     * 定义Bean映射 （<Bean类， Bean实例>）
+     */
+    private static final Map<Class<?>, Object> BEAN_MAP = new HashMap<>();
 
     static {
         Set<Class<?>> beanClassSet = ClassHelper.getBeanClassSet();

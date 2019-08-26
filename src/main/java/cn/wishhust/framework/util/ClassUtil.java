@@ -1,5 +1,6 @@
 package cn.wishhust.framework.util;
 
+import cn.wishhust.framework.helper.ConfigHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,10 @@ public class ClassUtil {
     public static Class<?> loadClass(String className, boolean isInitialized) {
         Class<?> cls;
         try {
+            // 返回与给定的字符串名称相关联类或接口的Class对象。
+            // name类的全名；
+            // initialize表示是否初始化类；
+            // loader表示加载时使用的类加载器。
             cls = Class.forName(className, isInitialized, getClassLoader());
         } catch (ClassNotFoundException e) {
             LOGGER.error("load class failure", e);
@@ -52,13 +57,14 @@ public class ClassUtil {
         return loadClass(className,true);
     }
 
+
     /**
      * 获取指定包名下的所有类
      * @param packageName
      * @return
      */
     public static Set<Class<?>> getClassSet(String packageName) {
-        Set<Class<?>> classSet = new HashSet<Class<?>>();
+        Set<Class<?>> classSet = new HashSet<>();
         try {
             Enumeration<URL> urls = getClassLoader().getResources(packageName.replace(".", "/"));
             while (urls.hasMoreElements()) {
@@ -66,7 +72,8 @@ public class ClassUtil {
                 if (url != null) {
                     String protocol = url.getProtocol();
                     if (protocol.equals("file")) {
-                        String packagePath = url.getPath().replace("%20", "");
+                        // url.getPath()获取的空格变%20，需要替换回去
+                        String packagePath = url.getPath().replace("%20", " ");
                         addClass(classSet, packagePath, packageName);
                     } else if (protocol.equals("jar")) {
                         JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
