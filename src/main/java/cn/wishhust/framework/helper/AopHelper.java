@@ -13,6 +13,11 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
+/**
+ * AopHelper需要获取所有目标类及其被拦截到切面类实例，并通过ProxyManager#createProxy方法来创建代理对象，最后将其放入BeanMap中。
+ *
+ */
+
 public final class AopHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AopHelper.class);
@@ -33,8 +38,14 @@ public final class AopHelper {
     }
 
 
+    /**
+     * 获取Aspect注解中设置到注解类，若该注解类不是Aspect类，则可调用ClassHelper#getClassSetByAnnotation方法获取相关类，
+     * 并把这些类放入集合返回
+     * @param aspect
+     * @return
+     */
     private static Set<Class<?>> createTargetClassSet(Aspect aspect) {
-        Set<Class<?>> targetClassSet = new HashSet<Class<?>>();
+        Set<Class<?>> targetClassSet = new HashSet<>();
         Class<? extends Annotation> annotation = aspect.value();
         if (annotation != null && !annotation.equals(Aspect.class)) {
             targetClassSet.addAll(ClassHelper.getClassSetByAnnotation(annotation));
@@ -43,18 +54,24 @@ public final class AopHelper {
     }
 
 
-
+    /**
+     *
+     * @param proxyMap
+     * @return
+     * @throws Exception
+     */
     private static Map<Class<?>, List<Proxy>> createTargetMap(Map<Class<?>, Set<Class<?>>> proxyMap) throws Exception {
-        Map<Class<?>,List<Proxy>> targetMap = new HashMap<Class<?>, List<Proxy>>();
+        Map<Class<?>,List<Proxy>> targetMap = new HashMap<>();
         for (Map.Entry<Class<?>, Set<Class<?>>> proxyEntry : proxyMap.entrySet()) {
             Class<?> proxyClass = proxyEntry.getKey();
             Set<Class<?>> targetClassSet = proxyEntry.getValue();
+
             for (Class<?> targetClass : targetClassSet) {
                 Proxy proxy = (Proxy) proxyClass.newInstance();
                 if (targetMap.containsKey(targetClass)) {
                     targetMap.get(targetClass).add(proxy);
                 } else {
-                    List<Proxy> proxyList = new ArrayList<Proxy>();
+                    List<Proxy> proxyList = new ArrayList<>();
                     proxyList.add(proxy);
                     targetMap.put(targetClass, proxyList);
                 }
@@ -63,6 +80,11 @@ public final class AopHelper {
         return targetMap;
     }
 
+
+    /**
+     * 获取代理类（切面类）1     目标类集合n 映射关系
+     * @return
+     */
     private static Map<Class<?>, Set<Class<?>>> createProxyMap() {
         Map<Class<?>, Set<Class<?>>> proxyMap = new HashMap<>();
         addAspectProxy(proxyMap);

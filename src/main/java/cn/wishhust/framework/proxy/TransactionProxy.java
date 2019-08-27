@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
+/**
+ * 事务代理
+ */
 public class TransactionProxy implements Proxy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionProxy.class);

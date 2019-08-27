@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * 数据库操作助手类
+ */
 public class DatabaseHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseHelper.class);
 
@@ -77,6 +80,7 @@ public class DatabaseHelper {
         Connection conn = getConnection();
         if (conn != null) {
             try {
+                // 设置自动提交为false
                 conn.setAutoCommit(false);
             } catch (SQLException e) {
                 LOGGER.error("begin transaction failure", e);

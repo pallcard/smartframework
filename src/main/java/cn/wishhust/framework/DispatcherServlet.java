@@ -57,7 +57,6 @@ public class DispatcherServlet extends HttpServlet {
             // 获取请求方法和请求路径
             String requestMethod = req.getMethod().toLowerCase();
             String requestPath = req.getPathInfo();
-
             if (requestPath.equals("/favicon.ico")) {
                 return;
             }
