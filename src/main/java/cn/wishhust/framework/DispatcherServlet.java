@@ -30,8 +30,10 @@ import java.util.Map;
  *
  * @WebServlet
  * 属性
- * urlPatterns/value  指定Servlet处理的url
+ * urlPatterns/value  指定Servlet处理的url， /*指任意路径
  * loadOnStartup      标记容器是否在应用启动时就加载这个Servlet，默认不配置或数值为负数时表示客户端第一次请求Servlet时再加载；0或正数表示启动应用就加载，正数情况下，数值越小，加载该Servlet的优先级越高；
+ *
+ *
  */
 @WebServlet(urlPatterns = "/*", loadOnStartup = 0)
 public class DispatcherServlet extends HttpServlet {
@@ -40,8 +42,11 @@ public class DispatcherServlet extends HttpServlet {
         // 初始化相关Helper类
         HelperLoader.init();
         // 获取ServletContext对象（用于注册Servlet）
+        // ServletContext用来存放全局变量，每个Java虚拟机每个Web项目只有一个ServletContext,这个ServletContext是由Web服务器创建的，来保证它的唯一性。
         ServletContext servletContext = servletConfig.getServletContext();
         // 注册处理Jsp的servlet
+        // 两个 getServletRegistration() 方法主要用于动态为 Servlet 增加映射信息，这等价于在 web.xml( 抑或 web-fragment.xml) 中使用 <servlet-mapping> 标签为存在的 Servlet 增加映射信息。
+        // getServletRegistration() 根据servlet名称查找其注册信息，即ServletRegistration实例。
         ServletRegistration jspServlet = servletContext.getServletRegistration("jsp");
         jspServlet.addMapping(ConfigHelper.getAppJspPath() + "*");
         // 注册处理静态资源的默认Servlet
@@ -152,12 +157,18 @@ public class DispatcherServlet extends HttpServlet {
         String path = view.getPath();
         if (StringUtil.isNotEmpty(path)) {
             if (path.startsWith("/")) {
+                // HttpServletResponse.sendRedirect()将请求转发到另一个servlet
+                // sendRedirect()将请求转发到另一个servlet
                 response.sendRedirect(request.getContextPath() + path);
             } else {
                 Map<String, Object> model = view.getModel();
                 for (Map.Entry<String, Object> entry : model.entrySet()) {
                     request.setAttribute(entry.getKey(), entry.getValue());
                 }
+                // RequestDispatcher.forward()将请求内部转发到另一个servlet
+                // getRequestDispatcher ()方法获得RequestDispatcher对象，这个对象可以被用来内部转发。
+                // getRequestDispatcher ()调用方法时，传递一个字符串包含要把请求的Servlet的名字。
+                // 通过将HttpServletRequest和HttpServletResponse传给RequestDispatcher的对象，然后调用forword()方法。然后内部转发到另一个Servlet
                 request.getRequestDispatcher(ConfigHelper.getAppJspPath()+path).forward(request,response);
             }
         }
