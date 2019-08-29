@@ -49,8 +49,7 @@ public final class RequestHelper {
             }
         }
         return formParamList;
-    }
-
+     }
 
     private static List<FormParam> parseInputStream(HttpServletRequest request) throws IOException {
         List<FormParam> formParamList = new ArrayList<>();

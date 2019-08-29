@@ -73,29 +73,7 @@ public class DispatcherServlet extends HttpServlet {
                 // 获取Controller类及其Bean实例
                 Class<?> controllerClass = handler.getControllerClass();
                 Object controllerBean = BeanHelper.getBean(controllerClass);
-//            // 创建请求参数对象
-//            HashMap<String, Object> paramMap = new HashMap<String, Object>();
-//            Enumeration<String> paramNames = req.getParameterNames();
-//            while (paramNames.hasMoreElements()) {
-//                String paramName = paramNames.nextElement();
-//                String paramValue = req.getParameter(paramName);
-//                paramMap.put(paramName, paramValue);
-//            }
-//            String body = CodecUtil.decodeURL(StreamUtil.getString(req.getInputStream()));
-//            if (StringUtil.isNotEmpty(body)) {
-//                String[] params = StringUtil.splitString(body, "&");
-//                if (ArrayUtil.isNotEmpty(params)) {
-//                    for(String param : params) {
-//                        String [] array = StringUtil.splitString(param, "=");
-//                        if (ArrayUtil.isNotEmpty(array) && array.length == 2) {
-//                            String paramName = array[0];
-//                            String paramValue = array[1];
-//                            paramMap.put(paramName, paramValue);
-//                        }
-//                    }
-//                }
-//            }
-//            Param param = new Param(paramMap);
+                // 创建请求参数对象
                 Param param;
                 if (UploadHelper.isMultipart(req)) {
                     param = UploadHelper.createParam(req);
@@ -112,38 +90,12 @@ public class DispatcherServlet extends HttpServlet {
                 } else {
                     result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
                 }
-
-
                 //处理Action方法返回值
                 if (result instanceof View) {
                     // 返回 JSP 页面
-//                View view = (View) result;
-//                String path = view.getPath();
-//                if (StringUtil.isNotEmpty(path)) {
-//                    if (path.startsWith("/")) {
-//                        resp.sendRedirect(req.getContextPath() + path);
-//                    } else {
-//                        Map<String, Object> model = view.getModel();
-//                        for (Map.Entry<String, Object> entry : model.entrySet()) {
-//                            req.setAttribute(entry.getKey(), entry.getValue());
-//                        }
-//                        req.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(req, resp);
-//                    }
-//                }
                     handleViewResult((View) result, req, resp);
                 } else if (result instanceof Data) {
                     // 返回 JSON 数据
-//                Data data = (Data) result;
-//                Object model = data.getModel();
-//                if (model != null) {
-//                    resp.setContentType("application/json");
-//                    resp.setCharacterEncoding("UTF-8");
-//                    PrintWriter writer = resp.getWriter();
-//                    String json = JsonUtil.toJson(model);
-//                    writer.write(json);
-//                    writer.flush();
-//                    writer.close();
-//                }
                     handleDataResult((Data) result, resp);
                 }
             }
@@ -162,8 +114,10 @@ public class DispatcherServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + path);
             } else {
                 Map<String, Object> model = view.getModel();
-                for (Map.Entry<String, Object> entry : model.entrySet()) {
-                    request.setAttribute(entry.getKey(), entry.getValue());
+                if (model != null) {
+                    for (Map.Entry<String, Object> entry : model.entrySet()) {
+                        request.setAttribute(entry.getKey(), entry.getValue());
+                    }
                 }
                 // RequestDispatcher.forward()将请求内部转发到另一个servlet
                 // getRequestDispatcher ()方法获得RequestDispatcher对象，这个对象可以被用来内部转发。
